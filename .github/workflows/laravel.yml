@@ -32,7 +32,7 @@ jobs:
       run: php artisan serve &
     - name: Wait for server to be ready
       run: |
-        while ! curl -s http://localhost >/dev/null; do sleep 1; done
+        while ! curl -s http://localhost:8000 >/dev/null; do sleep 1; done
     - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
       env:
         DB_CONNECTION: sqlite
