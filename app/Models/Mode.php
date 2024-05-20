@@ -9,6 +9,11 @@ class Mode extends Model
 {
     use HasFactory;
 
+    public function defaultValue(): int
+    {
+        return key($this->values());
+    }
+
     public function values(): array
     {
         if ($this->name === 'time') {

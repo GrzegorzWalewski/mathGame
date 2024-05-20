@@ -6,12 +6,20 @@ use App\Services\ProblemGenerator;
 use Livewire\Component;
 use Livewire\Attributes\Reactive;
 use Livewire\Attributes\On;
+use App\Models\Mode;
 
 class GameBoard extends Component
 {
     public const DEFAULT_PROBLEMS_COUNT = 3;
+
     #[Reactive]
     public int $gameTypeId;
+
+    #[Reactive]
+    public int $gameModeId;
+
+    #[Reactive]
+    public int $gameModeValue;
 
     public array $answers;
 
@@ -21,13 +29,15 @@ class GameBoard extends Component
 
     public array $board = [];
 
+    public bool $timeMode = false;
+
     private ProblemGenerator $problemGeneratorService;
 
     #[On('gameSettingsChanged')]
     public function updateBoard()
     {
-        $this->reset(['answers', 'correctAnswers']);
-        $this->resetErrorBag();
+        $this->timeMode = Mode::find($this->gameModeId)->name === 'time';
+        $this->reset(['answers', 'correctAnswersCount']);
         $this->board = $this->generateProblems(self::DEFAULT_PROBLEMS_COUNT);
     }
 
@@ -41,11 +51,7 @@ class GameBoard extends Component
             array_shift($this->board);
             $this->reset(['answers']);
 
-            // TODO: use values from settings
-            $timeMode = true;
-            $limitQty = 5;
-
-            if ($timeMode || $this->correctAnswersCount == $limitQty - self::DEFAULT_PROBLEMS_COUNT) {
+            if ($this->timeMode || (!$this->timeMode && $this->correctAnswersCount <= $this->gameModeValue - self::DEFAULT_PROBLEMS_COUNT)) {
                 $this->board = array_merge($this->board, $this->generateProblems(1));
             } elseif (count($this->board) == 0) {
                 $this->dispatch('gameCompleted');

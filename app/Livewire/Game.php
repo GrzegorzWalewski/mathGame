@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\Attributes\On;
+use App\Models\Mode;
 
 class Game extends Component
 {
@@ -29,7 +30,8 @@ class Game extends Component
     public function setGameMode($gameModeId)
     {
         $this->gameModeId = $gameModeId;
-        $this->dispatch('gameSettingsChanged');
+        $mode = Mode::find($gameModeId);
+        $this->setGameModeValue($mode->defaultValue());
     }
 
     public function setGameModeValue($gameModeValue)
