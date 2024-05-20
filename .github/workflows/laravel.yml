@@ -40,3 +40,10 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: php artisan test
+    - name: Display Laravel Log
+      run: |
+        if [ -f storage/logs/laravel.log ]; then
+          cat storage/logs/laravel.log
+        else
+          echo "No logs found"
+        fi
