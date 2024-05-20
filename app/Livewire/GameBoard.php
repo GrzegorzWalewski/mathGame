@@ -20,7 +20,7 @@ class GameBoard extends Component
 
     private ProblemGenerator $problemGeneratorService;
 
-    #[On('gameTypeSelected')]
+    #[On('gameSettingsChanged')]
     public function updateBoard()
     {
         $this->reset(['answers', 'correctAnswers']);

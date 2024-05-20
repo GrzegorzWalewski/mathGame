@@ -7,9 +7,13 @@ use Livewire\Attributes\On;
 
 class Game extends Component
 {
-    public $gameTypeId = 1;
+    public int $gameTypeId = 1;
 
-    public $completed = false;
+    public int $gameModeId = 1;
+
+    public int $gameModeValue = 15;
+
+    public bool $completed = false;
 
     public function render()
     {
@@ -19,13 +23,30 @@ class Game extends Component
     public function setGameType($gameTypeId)
     {
         $this->gameTypeId = $gameTypeId;
-        $this->dispatch('gameTypeSelected');
+        $this->dispatch('gameSettingsChanged');
+    }
+
+    public function setGameMode($gameModeId)
+    {
+        $this->gameModeId = $gameModeId;
+        $this->dispatch('gameSettingsChanged');
+    }
+
+    public function setGameModeValue($gameModeValue)
+    {
+        $this->gameModeValue = $gameModeValue;
+        $this->dispatch('gameSettingsChanged');
     }
 
     #[On('gameCompleted')]
-    #[On('gameTypeSelected')]
     public function gameCompleted()
     {
-        $this->completed = !$this->completed;
+        $this->completed = true;
+    }
+
+    #[On('gameSettingsChanged')]
+    public function resetGame()
+    {
+        $this->completed = false;
     }
 }
