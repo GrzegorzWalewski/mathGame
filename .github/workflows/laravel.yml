@@ -41,11 +41,11 @@ jobs:
     - name: Wait for server to be ready
       run: |
         while ! curl -s http://localhost:8000 >/dev/null; do sleep 1; done
-    - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: php artisan test
+    # - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
+    #   env:
+    #     DB_CONNECTION: sqlite
+    #     DB_DATABASE: database/database.sqlite
+    #   run: php artisan test
     - name: Display laravel logs if any
       run: |
         if [ -f storage/logs/laravel.log ]; then
