@@ -11,7 +11,7 @@ class Division implements ProblemGenerator
     {
         $a = rand(1, 100);
         $b = rand(1, 100);
-        $c = $a / $b;
+        $c = round($a / $b);
         $problem = "{$a} / {$b} = ?";
 
         return new MathProblem($problem, $c);
