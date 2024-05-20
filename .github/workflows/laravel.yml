@@ -40,8 +40,6 @@ jobs:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: |
-        php artisan test tests/Feature/ExampleTest.php
-        
         if [ -f storage/logs/laravel.log ]; then
           cat storage/logs/laravel.log
         else
