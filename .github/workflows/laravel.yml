@@ -30,6 +30,8 @@ jobs:
         touch database/database.sqlite
     - name: Run migrations
       run: php artisan migrate
+    - name: Run seeders
+      run: php artisan db:seed
     - name: npm install & npm run build
       run: |
         npm install
