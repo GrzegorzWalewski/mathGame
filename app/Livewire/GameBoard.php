@@ -9,12 +9,15 @@ use Livewire\Attributes\On;
 
 class GameBoard extends Component
 {
+    public const DEFAULT_PROBLEMS_COUNT = 3;
     #[Reactive]
     public int $gameTypeId;
 
     public array $answers;
 
-    public array $correctAnswers;
+    public int $correctAnswersCount = 0;
+
+    public string $currentProblem;
 
     public array $board = [];
 
@@ -25,53 +28,49 @@ class GameBoard extends Component
     {
         $this->reset(['answers', 'correctAnswers']);
         $this->resetErrorBag();
-        $this->board = $this->generateBoard();
+        $this->board = $this->generateProblems(self::DEFAULT_PROBLEMS_COUNT);
     }
 
     public function updatedAnswers($value, $key)
     {
-        $allCorrect = true;
+        $firstProblem = reset($this->board);
+        $this->resetErrorBag('answers.' . $key);
+        
+        if ($firstProblem->answer == $value) {
+            $this->correctAnswersCount++;
+            array_shift($this->board);
+            $this->reset(['answers']);
 
-        foreach ($this->board as $key => $problem) {
-            $this->resetErrorBag('answers.' . $key);
+            // TODO: use values from settings
+            $timeMode = true;
+            $limitQty = 5;
 
-            if (!array_key_exists($key, $this->answers)) {
-                $allCorrect = false;
-
-                continue;
+            if ($timeMode || $this->correctAnswersCount == $limitQty - self::DEFAULT_PROBLEMS_COUNT) {
+                $this->board = array_merge($this->board, $this->generateProblems(1));
+            } elseif (count($this->board) == 0) {
+                $this->dispatch('gameCompleted');
             }
-
-            if ($this->answers[$key] == $problem->answer) {
-                $this->correctAnswers[$key] = true;
-            } else {
-                $this->addError('answers.' . $key, 'Wrong answer');
-
-                $allCorrect = false;
-            }
-        }
-
-        if ($allCorrect) {
-            $this->dispatch('gameCompleted');
+        } else {
+            $this->addError('answers.' . $key, 'Wrong answer');
         }
     }
 
     public function render()
     {
         if (empty($this->board)) {
-            $this->board = $this->generateBoard();
+            $this->board = $this->generateProblems(self::DEFAULT_PROBLEMS_COUNT);
         }
 
         return view('livewire.game-board');
     }
 
-    public function generateBoard(): array
+    public function generateProblems(int $count): array
     {
         $this->problemGeneratorService = new ProblemGenerator($this->gameTypeId);
-        $problemsCount = 5; // TODO: get from settings
 
         $board = [];
 
-        for ($i = 0; $i < $problemsCount; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             $board[] = $this->problemGeneratorService->generateProblem();
         }
 
