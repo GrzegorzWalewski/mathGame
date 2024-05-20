@@ -43,6 +43,8 @@ jobs:
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
+      run: php artisan test
+    - name: Display laravel logs if any
       run: |
         if [ -f storage/logs/laravel.log ]; then
           cat storage/logs/laravel.log
