@@ -1,4 +1,8 @@
 <div class="row flex justify-center my-1 py-1">
+    <h1>Game Board</h1>
+    @if ($timer->getStatus() === 'running')
+        Time: <span wire:poll.visible.1s>{{ $timer->getSecondsPassed() }}</span>
+    @endif
     <form class="max-w-sm mx-auto">
         @foreach ($board as $key => $row)
             <label for="number-input-{{ $key }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ $row->problem }}</label>
