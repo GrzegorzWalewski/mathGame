@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Services\ProblemGenerator;
+use App\Timer;
 use Livewire\Component;
 use Livewire\Attributes\Reactive;
 use Livewire\Attributes\On;
@@ -21,6 +22,8 @@ class GameBoard extends Component
     #[Reactive]
     public int $gameModeValue;
 
+    public Timer $timer;
+
     public array $answers;
 
     public int $correctAnswersCount = 0;
@@ -29,9 +32,14 @@ class GameBoard extends Component
 
     public array $board = [];
 
-    public bool $timeMode = false;
+    public bool $timeMode;
 
     private ProblemGenerator $problemGeneratorService;
+
+    public function mount()
+    {
+        $this->timer = new Timer();
+    }
 
     #[On('gameSettingsChanged')]
     public function updateBoard()
@@ -43,6 +51,7 @@ class GameBoard extends Component
 
     public function updatedAnswers($value, $key)
     {
+        $this->checkTime();
         $firstProblem = reset($this->board);
         $this->resetErrorBag('answers.' . $key);
         
@@ -64,7 +73,7 @@ class GameBoard extends Component
     public function render()
     {
         if (empty($this->board)) {
-            $this->board = $this->generateProblems(self::DEFAULT_PROBLEMS_COUNT);
+            $this->updateBoard();
         }
 
         return view('livewire.game-board');
@@ -81,5 +90,17 @@ class GameBoard extends Component
         }
 
         return $board;
+    }
+
+    public function checkTime()
+    {
+        if ($this->timer->getStatus() === Timer::STATUS_STOPPED) {
+            $this->timer->start();
+        }
+
+        $secondsPassed = $this->timer->getSecondsPassed();
+        if ($this->timeMode && $secondsPassed >= $this->gameModeValue) {
+            $this->dispatch('gameCompleted');
+        }
     }
 }
