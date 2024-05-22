@@ -32,7 +32,7 @@ class GameBoard extends Component
 
     public array $board = [];
 
-    public bool $timeMode = false;
+    public bool $timeMode;
 
     private ProblemGenerator $problemGeneratorService;
 
@@ -73,7 +73,7 @@ class GameBoard extends Component
     public function render()
     {
         if (empty($this->board)) {
-            $this->board = $this->generateProblems(self::DEFAULT_PROBLEMS_COUNT);
+            $this->updateBoard();
         }
 
         return view('livewire.game-board');
@@ -92,7 +92,7 @@ class GameBoard extends Component
         return $board;
     }
 
-    private function checkTime()
+    public function checkTime()
     {
         if ($this->timer->getStatus() === Timer::STATUS_STOPPED) {
             $this->timer->start();

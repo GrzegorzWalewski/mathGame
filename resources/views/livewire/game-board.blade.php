@@ -1,7 +1,6 @@
 <div class="row flex justify-center my-1 py-1">
-    <h1>Game Board</h1>
     @if ($timer->getStatus() === 'running')
-        Time: <span wire:poll.visible.1s>{{ $timer->getSecondsPassed() }}</span>
+        <p wire:poll.visible.1s="checkTime">{{ $gameModeValue - $timer->getSecondsPassed() }}s</p>
     @endif
     <form class="max-w-sm mx-auto">
         @foreach ($board as $key => $row)
