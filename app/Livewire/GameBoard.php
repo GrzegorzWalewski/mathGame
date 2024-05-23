@@ -24,7 +24,7 @@ class GameBoard extends Component
 
     public Timer $timer;
 
-    public array $answers;
+    public ?float $answer = null;
 
     public int $correctAnswersCount = 0;
 
@@ -34,40 +34,15 @@ class GameBoard extends Component
 
     public bool $timeMode;
 
+    public bool $hidden = false;
+
+    public array $solvedProblems = [];
+
     private ProblemGenerator $problemGeneratorService;
 
     public function mount()
     {
         $this->timer = new Timer();
-    }
-
-    #[On('gameSettingsChanged')]
-    public function updateBoard()
-    {
-        $this->timeMode = Mode::find($this->gameModeId)->name === 'time';
-        $this->reset(['answers', 'correctAnswersCount']);
-        $this->board = $this->generateProblems(self::DEFAULT_PROBLEMS_COUNT);
-    }
-
-    public function updatedAnswers($value, $key)
-    {
-        $this->checkTime();
-        $firstProblem = reset($this->board);
-        $this->resetErrorBag('answers.' . $key);
-        
-        if ($firstProblem->answer == $value) {
-            $this->correctAnswersCount++;
-            array_shift($this->board);
-            $this->reset(['answers']);
-
-            if ($this->timeMode || (!$this->timeMode && $this->correctAnswersCount <= $this->gameModeValue - self::DEFAULT_PROBLEMS_COUNT)) {
-                $this->board = array_merge($this->board, $this->generateProblems(1));
-            } elseif (count($this->board) == 0) {
-                $this->dispatch('gameCompleted');
-            }
-        } else {
-            $this->addError('answers.' . $key, 'Wrong answer');
-        }
     }
 
     public function render()
@@ -79,7 +54,56 @@ class GameBoard extends Component
         return view('livewire.game-board');
     }
 
-    public function generateProblems(int $count): array
+    public function checkAnswer()
+    {
+        $this->checkTime();
+        $firstProblem = reset($this->board);
+        
+        if ($this->answer && $firstProblem->answer == $this->answer) {
+            $this->correctAnswersCount++;
+            $this->solvedProblems[] = str_replace('?', $firstProblem->answer, $firstProblem->problem);
+            array_shift($this->board);
+            $this->reset(['answer']);
+            
+            if (count($this->board) == 0) {
+                $this->finishGame();
+
+                return;
+            }
+
+            if ($this->timeMode || (!$this->timeMode && $this->correctAnswersCount <= $this->gameModeValue - self::DEFAULT_PROBLEMS_COUNT)) {
+                $this->board = array_merge($this->board, $this->generateProblems(1));
+            }
+
+            $this->currentProblem = reset($this->board)->problem;
+        } else {
+            $this->addError('answer', 'Wrong answer');
+        }
+    }
+
+    public function checkTime()
+    {
+        if ($this->timer->getStatus() === Timer::STATUS_STOPPED) {
+            $this->timer->start();
+        }
+
+        $secondsPassed = $this->timer->getSecondsPassed();
+        if ($this->timeMode && $secondsPassed >= $this->gameModeValue) {
+            $this->finishGame();
+        }
+    }
+
+    #[On('gameSettingsChanged')]
+    public function updateBoard()
+    {
+        $this->hidden = false;
+        $this->timeMode = Mode::find($this->gameModeId)->name === 'time';
+        $this->reset(['answer', 'correctAnswersCount']);
+        $this->board = $this->generateProblems(self::DEFAULT_PROBLEMS_COUNT);
+        $this->currentProblem = reset($this->board)->problem;
+    }
+
+    private function generateProblems(int $count): array
     {
         $this->problemGeneratorService = new ProblemGenerator($this->gameTypeId);
 
@@ -92,15 +116,9 @@ class GameBoard extends Component
         return $board;
     }
 
-    public function checkTime()
+    private function finishGame()
     {
-        if ($this->timer->getStatus() === Timer::STATUS_STOPPED) {
-            $this->timer->start();
-        }
-
-        $secondsPassed = $this->timer->getSecondsPassed();
-        if ($this->timeMode && $secondsPassed >= $this->gameModeValue) {
-            $this->dispatch('gameCompleted');
-        }
+        $this->hidden = true;
+        $this->dispatch('gameCompleted', correctAnswersCount: $this->correctAnswersCount, secondsPassed: $this->timer->getSecondsPassed(), timeMode: $this->timeMode, solvedProblems: $this->solvedProblems);
     }
 }
