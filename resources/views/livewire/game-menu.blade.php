@@ -1,4 +1,4 @@
-<div class="row flex justify-center my-1 py-1">
+<div class="row flex justify-center my-1 p-4 @if ($hidden) hidden @endif">
     {{-- modificators --}}
     <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1">Read more</a>
     <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1">Read more</a>

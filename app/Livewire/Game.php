@@ -24,7 +24,7 @@ class Game extends Component
     public function setGameType($gameTypeId)
     {
         $this->gameTypeId = $gameTypeId;
-        $this->dispatch('gameSettingsChanged');
+        $this->dispatch('restartGame');
     }
 
     public function setGameMode($gameModeId)
@@ -37,7 +37,7 @@ class Game extends Component
     public function setGameModeValue($gameModeValue)
     {
         $this->gameModeValue = $gameModeValue;
-        $this->dispatch('gameSettingsChanged');
+        $this->dispatch('restartGame');
     }
 
     #[On('gameCompleted')]
@@ -46,7 +46,7 @@ class Game extends Component
         $this->completed = true;
     }
 
-    #[On('gameSettingsChanged')]
+    #[On('restartGame')]
     public function resetGame()
     {
         $this->completed = false;
