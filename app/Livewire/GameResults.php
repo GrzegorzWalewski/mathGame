@@ -30,7 +30,7 @@ class GameResults extends Component
         $this->hidden = false;
     }
 
-    #[On('gameSettingsChanged')]
+    #[On('restartGame')]
     public function hide()
     {
         $this->hidden = true;

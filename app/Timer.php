@@ -24,6 +24,12 @@ class Timer implements Wireable
         $this->startTime = now();
     }
 
+    public function stop(): void
+    {
+        $this->startTime = null;
+        $this->secondsPassed = 0;
+    }
+
     public function getSecondsPassed(): int
     {
         if (!$this->startTime) {

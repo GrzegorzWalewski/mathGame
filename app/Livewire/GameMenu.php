@@ -36,7 +36,7 @@ class GameMenu extends Component
         $this->hidden = true;
     }
 
-    #[On('gameSettingsChanged')]
+    #[On('restartGame')]
     public function show()
     {
         $this->hidden = false;

@@ -34,7 +34,7 @@
 
     <div class="grid grid-cols-subgrid gap-4 col-span-3 mt-4">
         <div class="col-start-2">
-            <button type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">{{ __('Play Again') }}</button>
+            <button @click="$dispatch('restartGame')" type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">{{ __('Play Again') }}</button>
         </div>
     </div>
 </div>

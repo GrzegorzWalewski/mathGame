@@ -93,9 +93,10 @@ class GameBoard extends Component
         }
     }
 
-    #[On('gameSettingsChanged')]
+    #[On('restartGame')]
     public function updateBoard()
     {
+        $this->timer->stop();
         $this->hidden = false;
         $this->timeMode = Mode::find($this->gameModeId)->name === 'time';
         $this->reset(['answer', 'correctAnswersCount']);
