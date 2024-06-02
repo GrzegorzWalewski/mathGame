@@ -99,7 +99,7 @@ class GameBoard extends Component
         $this->timer->stop();
         $this->hidden = false;
         $this->timeMode = Mode::find($this->gameModeId)->name === 'time';
-        $this->reset(['answer', 'correctAnswersCount']);
+        $this->reset(['answer', 'correctAnswersCount', 'solvedProblems']);
         $this->board = $this->generateProblems(self::DEFAULT_PROBLEMS_COUNT);
         $this->currentProblem = reset($this->board)->problem;
     }
@@ -121,5 +121,11 @@ class GameBoard extends Component
     {
         $this->hidden = true;
         $this->dispatch('gameCompleted', correctAnswersCount: $this->correctAnswersCount, secondsPassed: $this->timer->getSecondsPassed(), timeMode: $this->timeMode, solvedProblems: $this->solvedProblems);
+    }
+
+    #[On('gameCompleted')]
+    public function hide()
+    {
+        $this->hidden = true;
     }
 }
